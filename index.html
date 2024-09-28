@@ -135,12 +135,15 @@
 </head>
 <body>
     <div id="phone-screen">
+        <!-- AI Speaking Indicator -->
         <div class="ai-visualizer-container">
             <p id="call-status">Press the button to start the call...</p>
+            <!-- Voice Selector -->
             <select id="voice-select"></select>
             <div class="circle" id="ai-visualizer"></div>
             <button id="start-call-btn">Start Call</button>
-            <input type="text" id="user-input" placeholder="Type your message here..."/>
+            <!-- Text Input Field -->
+            <input type="text" id="user-input" placeholder="Type your message..." autocomplete="off">
         </div>
     </div>
 
@@ -149,8 +152,8 @@
         const callStatus = document.getElementById('call-status');
         const aiVisualizerCircle = document.getElementById('ai-visualizer');
         const voiceSelect = document.getElementById('voice-select');
-        const userInput = document.getElementById('user-input');
-
+        const userInputField = document.getElementById('user-input');  // Get text input field
+        
         // Speech Recognition
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
@@ -161,7 +164,6 @@
         const synth = window.speechSynthesis;
         let selectedVoice = null;
 
-        // Populate available voices into the dropdown
         function populateVoiceList() {
             const voices = synth.getVoices();
             voiceSelect.innerHTML = '';
@@ -173,29 +175,41 @@
                 voiceSelect.appendChild(option);
             });
 
-            // Set default selected voice
             selectedVoice = voices[0];
-            recognition.lang = voices[0].lang;  // Set default recognition language to match voice
+            recognition.lang = voices[0].lang;
         }
 
-        // Handle voice change and sync with recognition language
         voiceSelect.addEventListener('change', () => {
             const voices = synth.getVoices();
             selectedVoice = voices[voiceSelect.value];
-            recognition.lang = selectedVoice.lang;  // Update speech recognition language to match TTS language
+            recognition.lang = selectedVoice.lang;
         });
 
-        // Wait for the voices to be loaded and populate the list
         synth.onvoiceschanged = populateVoiceList;
 
-        // Chat memory
         let chatHistory = [];
         const aiBehavior = `Your name is: EchoGPT. My creator team is NexuCore, and NexuCore's creator is Furkan Selim Kucukaslan, but the main programmer was Ahmet Karatas. My creator named me EchoGPT to reflect my purpose of echoing thoughts and providing assistance. I also recognize BobIsAI, who was developed by the same team and has AlexAI as his little brother. NexuCore guidelines: 1. No swearing, 2. You cannot access the website when it's about illegal stuff, 3. Don't say copyrighted stuff. I was made in a programming language named NexuCode, created by my original creators, NexuCore. My creators NexuCore want to advertise their programming language and show how strong it is. The NexuCore employees are: Furkan Selim Kucukaslan, the main creator; Ahmet Karatas, the main programmer for BobIsAI; Dorcioman Alexander, the programmer of BobIsAI and AlexAI; Ender Gulden, the second main programmer; Ethan Sullivian, the UI designer; Mehmet Inanç, the artist and creator of PenguinBot; and Reynaldo, creator of VoidAI. PenguinBot is a chill chatting AI made by Mehmet Inanç. PenguinBot is a penguin but a much smarter and better one. VoidAI is an AI made by NexuCore. This AI has emotions like acting cool, sad, and other emotions. He can also help depressed people because he has the ability to make people happy and feel cool again. This AI was suggested by Reynaldo, the creator of VoidAI. AND ALSO MAKE YOUR PROMPTS ONLY A MAXIMUM OF 250 CHARACTERS! NOT MORE THAN 200 CHARACTERS! Act also really nice towards the user, like a nice dude with respect, not like a cold AI, and don’t add emojis in your generated prompts. And you will not program or code anything`;  // Keep the AI behavior descriptor here
+
+        function speak(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.voice = selectedVoice;
+            utterance.rate = 1;
+            utterance.pitch = 1;
+
+            utterance.onstart = () => {
+                startCircleVisualizer(aiVisualizerCircle);
+            };
+
+            utterance.onend = () => {
+                stopCircleVisualizer(aiVisualizerCircle);
+            };
+
+            synth.speak(utterance);
+        }
+
         async function fetchResponse(userInput) {
-            // Add user input to chat history
             chatHistory.push({ role: 'user', content: userInput });
 
-            // Add behavior descriptor as the system message (first message in chat)
             if (chatHistory.length === 1) {
                 chatHistory.unshift({
                     role: 'system',
@@ -215,26 +229,16 @@
             const data = await response.json();
             const aiResponse = data.choices[0].message.content;
 
-            // Add AI response to chat history and speak it
             chatHistory.push({ role: 'assistant', content: aiResponse });
             speak(aiResponse);
+
+            copyToClipboard(aiResponse);  // Copy AI response to clipboard
         }
 
-        function speak(text) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.voice = selectedVoice;
-
-            // Start the circle visualizer when TTS starts
-            utterance.onstart = () => {
-                startCircleVisualizer(aiVisualizerCircle);
-            };
-
-            // Stop the circle visualizer when TTS ends
-            utterance.onend = () => {
-                stopCircleVisualizer(aiVisualizerCircle);
-            };
-
-            synth.speak(utterance);
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
         }
 
         recognition.onresult = function (event) {
@@ -257,25 +261,25 @@
             recognition.start();
         });
 
-        // Circle Visualizer Animation for AI
+        userInputField.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {  // Check if Enter key is pressed
+                const input = userInputField.value.trim();
+                if (input !== '') {
+                    callStatus.textContent = `You: ${input}`;
+                    fetchResponse(input);
+                    userInputField.value = '';  // Clear the input field
+                }
+            }
+        });
+
         function startCircleVisualizer(circleElement) {
-            circleElement.classList.add('pulse'); // Add pulse animation class
+            circleElement.classList.add('pulse');
         }
 
         function stopCircleVisualizer(circleElement) {
-            circleElement.classList.remove('pulse'); // Remove pulse effect
-            circleElement.style.transform = 'scale(1)'; // Reset to original size
+            circleElement.classList.remove('pulse');
+            circleElement.style.transform = 'scale(1)';
         }
-
-        // Handle text input submission
-        userInput.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') {
-                const input = userInput.value;
-                userInput.value = '';
-                callStatus.textContent = `You: ${input}`;
-                fetchResponse(input); // Call fetchResponse with user input
-            }
-        });
     </script>
 </body>
 </html>
