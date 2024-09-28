@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EchoGPT - Your Voice Assistant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e; /* Dark background */
+            color: #ffffff; /* Light text */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        header {
+            background-color: #4A90E2; /* Header color */
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            animation: fadeIn 1s ease-in;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        .features {
+            margin: 20px 0;
+            border-radius: 15px;
+            background: rgba(50, 50, 50, 0.8); /* Darker background for features */
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            animation: slideIn 1s ease-in;
+            width: 80%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .features h2 {
+            border-bottom: 2px solid #4A90E2;
+            padding-bottom: 10px;
+            width: 100%;
+            text-align: center; /* Ensure heading remains centered */
+        }
+
+        .features ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: center;
+        }
+
+        .features ul li {
+            margin: 10px 0;
+        }
+
+        .button {
+            background-color: #4A90E2; /* Button color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .button:hover {
+            background-color: #357ABD; /* Darker shade on hover */
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.8em;
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .particle-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5); /* Slightly transparent particles */
+            animation: float 6s infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="particle-background"></div>
+    <header>
+        <h1>EchoGPT</h1>
+        <p>Your Super LLM Voice Assistant by NexuCore</p>
+    </header>
+    <main>
+        <section class="features">
+            <h2>Features</h2>
+            <ul>
+                <li>Talk with you using TTS</li>
+                <li>Voice recognition system</li>
+                <li>Personalized conversations</li>
+                <li>Seamless integration with your apps</li>
+            </ul>
+            <a href="https://echogpt-ai.github.io/-/" class="button">Visit EchoGPT Website</a>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 NexuCore. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const particleBackground = document.querySelector('.particle-background');
+
+        for (let i = 0; i < 100; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            const size = Math.random() * 10 + 5; // Size between 5 and 15
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.left = `${Math.random() * window.innerWidth}px`;
+            particle.style.top = `${Math.random() * window.innerHeight}px`;
+            particleBackground.appendChild(particle);
+        }
+    </script>
+</body>
+</html>
